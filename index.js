@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import depoimentoSchema from "./src/model/Depoimento.js";
+import Depoimento from "./src/model/Depoimento.js";
 
 const app = express();
 const port = 3000;
@@ -18,17 +19,16 @@ app.get('/', (req, res) => {
     res.send('Welcome to my API!!');
 });
 
-app.get('/depoimentos', async (req, res) => {
-    try {
-        let buscaDepoimentos = await depoimentos.find();
-
-        res.status(200).send(buscaDepoimentos);
-    } catch(err) {
-        res.status(500).send(err)
-    }
+// get all depoimentos
+app.get('/depoimentos', (req, res) => {
+    depoimentoSchema
+        .find()
+        .then((data) => res.json(data))
+        .catch((error) => res.json({message: error}))
 });
 
-app.post('/depoimentos', async (req, res) => {
+// create depoimento
+app.post('/depoimentos', (req, res) => {
     const resultado = depoimentoSchema(req.body);
     resultado
         .save()
@@ -36,16 +36,24 @@ app.post('/depoimentos', async (req, res) => {
         .catch((error) => res.json({message: error}))
 });
 
+// update depoimento
 app.put('/depoimentos/:id', (req, res) => {
-    const id = req.params.id;
-
-    res.send('depoimento atualizado!')
+    const { id } = req.params;
+    const { foto, depoimento, nome } = req.body;
+    depoimentoSchema
+        .findByIdAndUpdate({ _id: id }, { $set: {foto, depoimento, nome} })
+        .then((data) => res.json(data))
+        .catch((error) => res.json({message: error}))
 });
 
+// delete depoimento
 app.delete('/depoimentos/:id', (req, res) => {
     const id = req.params.id;
 
-    res.send('depoimento deletado!')
+    depoimentoSchema
+        .findByIdAndDelete({ _id: id })
+        .then((data) => res.json(data))
+        .catch((error) => res.json({message: error}))
 });
 
 // server

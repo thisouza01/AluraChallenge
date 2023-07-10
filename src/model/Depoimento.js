@@ -10,7 +10,7 @@ const depoimentoSchema = new mongoose.Schema(
         nome:{
             type: String ,
             required: true
-        } 
+        },
     }
 );
 
